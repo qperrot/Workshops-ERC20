@@ -18,8 +18,8 @@ func constructor{
         initial_supply: Uint256,
         recipient: felt
     ):
-    ERC20.initializer(name, symbol, decimals)
-    ERC20._mint(recipient, initial_supply)
+    # ERC20.initializer(name, symbol, decimals)
+    # ERC20._mint(recipient, initial_supply)
     return ()
 end
 
@@ -65,16 +65,6 @@ func decimals{
     }() -> (decimals: felt):
     let (decimals) = ERC20.decimals()
     return (decimals)
-end
-
-@view
-func balanceOf{
-        syscall_ptr : felt*,
-        pedersen_ptr : HashBuiltin*,
-        range_check_ptr
-    }(account: felt) -> (balance: Uint256):
-    let (balance: Uint256) = ERC20.balance_of(account)
-    return (balance)
 end
 
 @view

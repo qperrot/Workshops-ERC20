@@ -2,12 +2,13 @@ import fs from "fs";
 import { Account, Contract, defaultProvider, ec, json, number, stark } from "starknet";
 
 async function main() {
+    const tmp = "0x026B52DF0D40e2A732A9e603f3d84f40B080d35d719178188C0755801c37057F"
     const privateKey = stark.randomAddress()
     const starkKeyPair = ec.getKeyPair(privateKey);
     const starkKeyPub = ec.getStarkKey(starkKeyPair);
 
     /* DEPLOY ACCOUNT */
-    const compiledAccount = json.parse(fs.readFileSync(`${__dirname}/../starknet-artifacts/contracts/Account/Account.cairo/Account.json`).toString('ascii'))
+    const compiledAccount = json.parse(fs.readFileSync(`${__dirname}/../starknet-artifacts/account-contract-artifacts/OpenZeppelinAccount/0.1.0/Account.cairo/Account.json`).toString('ascii'))
 
     const accountResponse = await defaultProvider.deployContract({
         contract: compiledAccount,
@@ -18,8 +19,7 @@ async function main() {
     console.log("Waiting for Tx to be Accepted on Starknet - Account Deployment...");
     await defaultProvider.waitForTransaction(accountResponse.transaction_hash);
 
-    const keyPair = ec.getKeyPair(process.env.PRIVATE_KEY as string)
-    const account = new Account(defaultProvider, accountResponse.address as string, keyPair)
+    const account = new Account(defaultProvider, accountResponse.address as string, starkKeyPair)
 
     // const accountContract = new Contract(
     // compiledAccount.abi,
@@ -43,18 +43,17 @@ async function main() {
     const erc20Response = await defaultProvider.deployContract({
         contract: compiledErc20,
         constructorCalldata: [
-            "MyToken",
-            "ERC20",
-            18,
-            1000,
-            "0x026B52DF0D40e2A732A9e603f3d84f40B080d35d719178188C0755801c37057F"
+            1111,
+            9876,
+            number.toBN(18),
+            number.toBN(1000),
+            accountResponse.address as string
         ],
-        });
+    });
     console.log("Waiting for Tx to be Accepted on Starknet - ERC20 Deployment...");
     await defaultProvider.waitForTransaction(erc20Response.transaction_hash);
-
-    const erc20Address = erc20Response.address;
-    const erc20 = new Contract(compiledErc20.abi, erc20Address as string);
+    console.log("Adress ERC20",erc20Response.address)
+    const erc20 = new Contract(compiledErc20.abi, erc20Response.address as string);
     console.log("Adress ERC20",erc20.address)
     /* Mint tokens to an account address */
     // const { transaction_hash: mintTxHash } = await erc20.mint(

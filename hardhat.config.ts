@@ -8,14 +8,14 @@ import '@shardlabs/starknet-hardhat-plugin'
 const config: HardhatUserConfig = {
   solidity: '0.6.12',
   starknet: {
-    dockerizedVersion: "0.8.1", // alternatively choose one of the two venv options below
+    // dockerizedVersion: "0.9.0", // alternatively choose one of the two venv options below
     // uses (my-venv) defined by `python -m venv path/to/my-venv`
     // venv: "../.venv",
 
     // uses the currently active Python environment (hopefully with available Starknet commands!)
     // venv: 'active',
     // network: "alpha",
-    network: 'alpha-goerli',
+    network: 'devnet',
     wallets: {
       OpenZeppelin: {
         accountName: 'OpenZeppelin',
