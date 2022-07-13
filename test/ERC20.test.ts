@@ -15,7 +15,6 @@ describe('Test ERC20', function () {
     let user: Account
   
     before(async function () {
-        console.log("ssfssf")
       // assumes contract.cairo and events.cairo has been compiled
         // owner = await starknet.getAccountFromAddress(
         //     "0x34ec4049940c1da21e7513b778b43dd9cdc0f20acf8f444cf3c277b507b4885",
