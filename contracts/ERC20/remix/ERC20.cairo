@@ -3,6 +3,7 @@
 from starkware.starknet.common.syscalls import get_caller_address
 from starkware.cairo.common.cairo_builtins import HashBuiltin, SignatureBuiltin
 from starkware.cairo.common.bool import TRUE, FALSE
+from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.math import assert_not_zero, assert_lt
 from starkware.cairo.common.uint256 import (
     Uint256, uint256_check, uint256_add, uint256_sub, uint256_mul,
@@ -315,11 +316,12 @@ namespace ERC20:
             pedersen_ptr : HashBuiltin*,
             range_check_ptr
         }(spender: felt, added_value: Uint256) -> ():
+        alloc_locals
         with_attr error("ERC20: added_value is not a valid Uint256"):
             uint256_check(added_value)
         end
 
-        let (caller) = get_caller_address()
+        let (local caller) = get_caller_address()
         let (current_allowance: Uint256) = ERC20_allowances.read(caller, spender)
 
         # add allowance
