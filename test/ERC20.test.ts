@@ -16,18 +16,8 @@ describe('Test ERC20', function () {
   
     before(async function () {
       // assumes contract.cairo and events.cairo has been compiled
-        // owner = await starknet.getAccountFromAddress(
-        //     "0x34ec4049940c1da21e7513b778b43dd9cdc0f20acf8f444cf3c277b507b4885",
-        //     "0x47d10628b329b74cfca0e27cc656a442",
-        //     "OpenZeppelin"
-        // );
         owner = await starknet.deployAccount('OpenZeppelin')
         user = await starknet.deployAccount('OpenZeppelin')
-        // user = await starknet.getAccountFromAddress(
-        //     "0x7c637159a0eb29fecd47313a9ab25aeca74c122f86101b3e70a7b9de02fb5cd",
-        //     "0x69f6fffcc143f82096565cbbcd5304f",
-        //     "OpenZeppelin"
-        // );
 
         ERC20Factory = await starknet.getContractFactory('ERC20/ERC20') 
         ERC20 = await ERC20Factory.deploy({

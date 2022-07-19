@@ -113,15 +113,6 @@ namespace ERC20:
         return (decimals)
     end
 
-    func balance_of{
-            syscall_ptr : felt*,
-            pedersen_ptr : HashBuiltin*,
-            range_check_ptr
-        }(account: felt) -> (balance: Uint256):
-        let (balance: Uint256) = ERC20_balances.read(account)
-        return (balance)
-    end
-
     func allowance{
             syscall_ptr : felt*,
             pedersen_ptr : HashBuiltin*,
@@ -187,27 +178,6 @@ namespace ERC20:
         # add allowance
         with_attr error_message("ERC20: allowance overflow"):
             let (new_allowance: Uint256) = SafeUint256.add(current_allowance, added_value)
-        end
-
-        _approve(caller, spender, new_allowance)
-        return ()
-    end
-
-    func decrease_allowance{
-            syscall_ptr : felt*,
-            pedersen_ptr : HashBuiltin*,
-            range_check_ptr
-        }(spender: felt, subtracted_value: Uint256) -> ():
-        alloc_locals
-        with_attr error_message("ERC20: subtracted_value is not a valid Uint256"):
-            uint256_check(subtracted_value)
-        end
-
-        let (caller) = get_caller_address()
-        let (current_allowance: Uint256) = ERC20_allowances.read(owner=caller, spender=spender)
-
-        with_attr error_message("ERC20: allowance below zero"):
-            let (new_allowance: Uint256) = SafeUint256.sub_le(current_allowance, subtracted_value)
         end
 
         _approve(caller, spender, new_allowance)
