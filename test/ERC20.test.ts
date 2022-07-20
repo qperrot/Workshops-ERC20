@@ -53,42 +53,4 @@ describe('Test ERC20', function () {
         console.log("Balance Owner: ", balanceOwner)
         expect(balanceOwner).to.deep.equal({high: 0n, low: 990n})
     })
-
-    it('should increase Allowance successfully', async () => {
-        
-        await user.invoke(ERC20, "increaseAllowance", {spender: owner.address, added_value: {high: 0n, low: 2n} })
-
-        const {remaining : remaining} = await user.call(ERC20, "allowance", {owner: user.address, spender: owner.address})
-        console.log("Allowance Owner: ", remaining)
-        expect(remaining).to.deep.equal({high: 0n, low: 2n})
-    })
-
-    it('should transferFrom successfully', async () => {
-        await owner.invoke(ERC20, "transferFrom", {sender: user.address, recipient: owner.address, amount: {high: 0n, low: 1n} })
-        
-        const {balance : balance} = await user.call(ERC20, "balanceOf", {account: user.address})
-        console.log("Balance User: ", balance)
-        expect(balance).to.deep.equal({high: 0n, low: 9n})
-
-        const {balance : balanceOwner} = await owner.call(ERC20, "balanceOf", {account: owner.address})
-        console.log("Balance Owner: ", balanceOwner)
-        expect(balanceOwner).to.deep.equal({high: 0n, low: 991n})
-    })
-
-    it('should transferFrom fail', async () => {
-        try {
-            await owner.invoke(ERC20, "transferFrom", {sender: user.address, recipient: owner.address, amount: {high: 0n, low: 3n} })
-            throw new Error('This should not pass!')
-        } catch (error: any) {
-            expect(/assert/gi.test(error.message)).to.be.true
-        }
-        const {balance : balance} = await user.call(ERC20, "balanceOf", {account: user.address})
-        console.log("Balance User: ", balance)
-        expect(balance).to.deep.equal({high: 0n, low: 9n})
-
-        const {balance : balanceOwner} = await owner.call(ERC20, "balanceOf", {account: owner.address})
-        console.log("Balance Owner: ", balanceOwner)
-        expect(balanceOwner).to.deep.equal({high: 0n, low: 991n})
-    })
-
 })
