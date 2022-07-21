@@ -1,9 +1,11 @@
 # Workshops-ERC20
 
 # Installation
-Go to https://www.cairo-lang.org/docs/quickstart.html to install Cairo and package.
-Run npm install.
-Install starknet devnet with cmd: pip3 install starknet-devnet
+- Start docker
+- Go to https://www.cairo-lang.org/docs/quickstart.html to install Cairo and package.
+- Run npm install.
+- Install starknet devnet with cmd: pip3 install starknet-devnet
+- link -> https://github.com/Shard-Labs/starknet-devnet
 
 # ERC20 Rules
 - Total supply

@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@shardlabs/starknet-hardhat-plugin": "^0.6.1",
+    "@shardlabs/starknet-hardhat-plugin": "^0.6.2",
     "@types/chai": "^4.3.1",
     "@types/jest": "^28.1.4",
     "@types/mocha": "^9.1.1",

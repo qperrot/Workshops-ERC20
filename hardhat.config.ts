@@ -8,7 +8,7 @@ import '@shardlabs/starknet-hardhat-plugin'
 const config: HardhatUserConfig = {
   solidity: '0.6.12',
   starknet: {
-    // dockerizedVersion: "0.9.0", // alternatively choose one of the two venv options below
+    // dockerizedVersion: "0.9.1", // alternatively choose one of the two venv options below
     // uses (my-venv) defined by `python -m venv path/to/my-venv`
     // venv: "../.venv",
 
@@ -30,7 +30,7 @@ const config: HardhatUserConfig = {
     },
     integratedDevnet: {
       url: 'http://127.0.0.1:5050',
-    //   venv: 'active',
+      //venv: 'active',
       dockerizedVersion: "0.2.0"
     },
   },
