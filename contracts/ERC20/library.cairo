@@ -1,9 +1,9 @@
 %lang starknet
 
 from starkware.starknet.common.syscalls import get_caller_address
-from starkware.cairo.common.cairo_builtins import HashBuiltin, SignatureBuiltin
+from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.cairo.common.math import assert_not_zero, assert_lt
-from starkware.cairo.common.bool import TRUE, FALSE
+from starkware.cairo.common.bool import FALSE
 from starkware.cairo.common.uint256 import Uint256, uint256_check, uint256_eq, uint256_not
 
 from contracts.ERC20.utils.constants import UINT8_MAX
@@ -49,6 +49,10 @@ end
 func ERC20_allowances(owner: felt, spender: felt) -> (allowance: Uint256):
 end
 
+@storage_var
+func ERC20_only_owner() -> (address: felt):
+end
+
 namespace ERC20:
 
     #
@@ -62,13 +66,18 @@ namespace ERC20:
         }(
             name: felt,
             symbol: felt,
-            decimals: felt
+            decimals: felt,
+            recipient: felt
         ):
         ERC20_name.write(name)
         ERC20_symbol.write(symbol)
         with_attr error_message("ERC20: decimals exceed 2^8"):
             assert_lt(decimals, UINT8_MAX)
         end
+        with_attr error_message("ERC20: address must not be 0"):
+            assert_not_zero(recipient)
+        end
+        ERC20_only_owner.write(recipient)
         ERC20_decimals.write(decimals)
         return ()
     end
@@ -113,6 +122,15 @@ namespace ERC20:
         return (decimals)
     end
 
+    func balance_of{
+            syscall_ptr : felt*,
+            pedersen_ptr : HashBuiltin*,
+            range_check_ptr
+        }(account: felt) -> (balance: Uint256):
+        let (balance: Uint256) = ERC20_balances.read(account)
+        return (balance)
+    end
+
     func allowance{
             syscall_ptr : felt*,
             pedersen_ptr : HashBuiltin*,
@@ -120,6 +138,29 @@ namespace ERC20:
         }(owner: felt, spender: felt) -> (remaining: Uint256):
         let (remaining: Uint256) = ERC20_allowances.read(owner, spender)
         return (remaining)
+    end
+
+    func owner{
+            syscall_ptr : felt*,
+            pedersen_ptr : HashBuiltin*,
+            range_check_ptr
+        }() -> (address: felt):
+        let (address) = ERC20_only_owner.read()
+        return (address)
+    end
+
+    func set_decimals{
+            syscall_ptr : felt*,
+            pedersen_ptr : HashBuiltin*,
+            range_check_ptr
+        }(decimals: felt):
+        let (caller) = get_caller_address()
+        let (owner) = ERC20_only_owner.read()
+        with_attr error_message("ERC20: Wrong owner"):
+            assert owner = caller
+        end
+        ERC20_decimals.write(decimals)
+        return ()
     end
 
     func transfer{
@@ -178,6 +219,27 @@ namespace ERC20:
         # add allowance
         with_attr error_message("ERC20: allowance overflow"):
             let (new_allowance: Uint256) = SafeUint256.add(current_allowance, added_value)
+        end
+
+        _approve(caller, spender, new_allowance)
+        return ()
+    end
+
+    func decrease_allowance{
+            syscall_ptr : felt*,
+            pedersen_ptr : HashBuiltin*,
+            range_check_ptr
+        }(spender: felt, subtracted_value: Uint256) -> ():
+        alloc_locals
+        with_attr error_message("ERC20: subtracted_value is not a valid Uint256"):
+            uint256_check(subtracted_value)
+        end
+
+        let (caller) = get_caller_address()
+        let (current_allowance: Uint256) = ERC20_allowances.read(owner=caller, spender=spender)
+
+        with_attr error_message("ERC20: allowance below zero"):
+            let (new_allowance: Uint256) = SafeUint256.sub_le(current_allowance, subtracted_value)
         end
 
         _approve(caller, spender, new_allowance)
